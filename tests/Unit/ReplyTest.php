@@ -2,14 +2,14 @@
 
 namespace Tests\Unit;
 
-use Tests\TestCase;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Tests\TestCase;
 
 class ReplyTest extends TestCase
 {
     use DatabaseMigrations;
-    /** @test  */
+
+    /** @test */
     function it_has_an_owner()
     {
         $reply = create('App\Reply');
