@@ -2,98 +2,61 @@
 
 namespace App\Http\Controllers;
 
-use App\Thread;
 use App\Reply;
-use Illuminate\Http\Request;
+use App\Thread;
 
 class RepliesController extends Controller
 {
+    /**
+     * Create a new RepliesController instance.
+     */
     public function __construct()
     {
         $this->middleware('auth');
     }
 
     /**
-     * Display a listing of the resource.
+     * Persist a new reply.
      *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @param  integer $channelId
+     * @param  Thread  $thread
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function store($channelId, Thread $thread)
     {
-        $this->validate(request(), [
-            'body' => 'required'
-        ]);
+        $this->validate(request(), ['body' => 'required']);
 
-        $thread->addReply([
+        $reply = $thread->addReply([
             'body' => request('body'),
             'user_id' => auth()->id()
         ]);
 
-        return back()->with('flash', 'Your reply has been posted');
+        if (request()->expectsJson()) {
+            return $reply->load('owner');
+        }
+
+        return back()->with('flash', 'Your reply has been left.');
     }
 
     /**
-     * Display the specified resource.
+     * Update an existing reply.
      *
-     * @param  \App\Reply  $reply
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Reply $reply)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Reply  $reply
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Reply $reply)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Reply  $reply
-     * @return \Illuminate\Http\Response
+     * @param Reply $reply
      */
     public function update(Reply $reply)
     {
         $this->authorize('update', $reply);
 
+        $this->validate(request(), ['body' => 'required']);
+
         $reply->update(request(['body']));
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Delete the given reply.
      *
-     * @param  \App\Reply  $reply
-     * @return \Illuminate\Http\Response
+     * @param  Reply $reply
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function destroy(Reply $reply)
     {
@@ -101,9 +64,10 @@ class RepliesController extends Controller
 
         $reply->delete();
 
-        if(request()->expectsJson()) {
-          return response(['status' => 'Reply deleted']);
+        if (request()->expectsJson()) {
+            return response(['status' => 'Reply deleted']);
         }
+
         return back();
     }
 }
