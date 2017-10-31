@@ -1,10 +1,8 @@
 <?php
-
 namespace App\Http\Controllers;
-
+use App\Http\Requests\CreatePostRequest;
 use App\Reply;
 use App\Thread;
-
 class RepliesController extends Controller
 {
     /**
@@ -12,32 +10,33 @@ class RepliesController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth');
+        $this->middleware('auth', ['except' => 'index']);
     }
-
+    /**
+     * Fetch all relevant replies.
+     *
+     * @param int    $channelId
+     * @param Thread $thread
+     */
+    public function index($channelId, Thread $thread)
+    {
+        return $thread->replies()->paginate(20);
+    }
     /**
      * Persist a new reply.
      *
-     * @param  integer $channelId
-     * @param  Thread  $thread
-     * @return \Illuminate\Http\RedirectResponse
+     * @param  integer           $channelId
+     * @param  Thread            $thread
+     * @param  CreatePostRequest $form
+     * @return \Illuminate\Database\Eloquent\Model
      */
-    public function store($channelId, Thread $thread)
+    public function store($channelId, Thread $thread, CreatePostRequest $form)
     {
-        $this->validate(request(), ['body' => 'required']);
-
-        $reply = $thread->addReply([
+        return $thread->addReply([
             'body' => request('body'),
             'user_id' => auth()->id()
-        ]);
-
-        if (request()->expectsJson()) {
-            return $reply->load('owner');
-        }
-
-        return back()->with('flash', 'Your reply has been left.');
+        ])->load('owner');
     }
-
     /**
      * Update an existing reply.
      *
@@ -46,12 +45,15 @@ class RepliesController extends Controller
     public function update(Reply $reply)
     {
         $this->authorize('update', $reply);
-
-        $this->validate(request(), ['body' => 'required']);
-
-        $reply->update(request(['body']));
+        try {
+            $this->validate(request(), ['body' => 'required|spamfree']);
+            $reply->update(request(['body']));
+        } catch (\Exception $e) {
+            return response(
+                'Sorry, your reply could not be saved at this time.', 422
+            );
+        }
     }
-
     /**
      * Delete the given reply.
      *
@@ -61,13 +63,10 @@ class RepliesController extends Controller
     public function destroy(Reply $reply)
     {
         $this->authorize('update', $reply);
-
         $reply->delete();
-
         if (request()->expectsJson()) {
             return response(['status' => 'Reply deleted']);
         }
-
         return back();
     }
 }

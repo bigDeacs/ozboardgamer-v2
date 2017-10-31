@@ -48,6 +48,18 @@ $factory->define(App\Reply::class, function ($faker) {
     ];
 });
 
+$factory->define(\Illuminate\Notifications\DatabaseNotification::class, function ($faker) {
+    return [
+        'id' => \Ramsey\Uuid\Uuid::uuid4()->toString(),
+        'type' => 'App\Notifications\ThreadWasUpdated',
+        'notifiable_id' => function() {
+          return auth()->id() ?: factory('App\User')->create()->id;
+        },
+        'notifiable_type' => 'App\User',
+        'data' => ['foo' => 'bar']
+    ];
+});
+
 $factory->define(App\Channel::class, function ($faker) {
     $name = $faker->word;
 
