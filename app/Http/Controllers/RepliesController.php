@@ -1,8 +1,13 @@
 <?php
+
 namespace App\Http\Controllers;
+
 use App\Http\Requests\CreatePostRequest;
+use App\notifications\YouWereMentioned;
 use App\Reply;
 use App\Thread;
+use App\User;
+
 class RepliesController extends Controller
 {
     /**
@@ -20,7 +25,7 @@ class RepliesController extends Controller
      */
     public function index($channelId, Thread $thread)
     {
-        return $thread->replies()->paginate(20);
+        return $thread->replies()->paginate(10);
     }
     /**
      * Persist a new reply.
@@ -32,10 +37,22 @@ class RepliesController extends Controller
      */
     public function store($channelId, Thread $thread, CreatePostRequest $form)
     {
-        return $thread->addReply([
+        $reply = $thread->addReply([
             'body' => request('body'),
             'user_id' => auth()->id()
-        ])->load('owner');
+        ]);
+
+        // preg_match_all('/\@([^\s\.]+)/', $reply->body, $names);
+        //
+        // foreach($names[1] as $name)
+        // {
+        //     $user = User::whereName($name)->first();
+        //     if($user) {
+        //       $user->notify(new YouWereMentioned($reply));
+        //     }
+        // }
+
+        return $reply->load('owner');
     }
     /**
      * Update an existing reply.
@@ -45,14 +62,8 @@ class RepliesController extends Controller
     public function update(Reply $reply)
     {
         $this->authorize('update', $reply);
-        try {
-            $this->validate(request(), ['body' => 'required|spamfree']);
-            $reply->update(request(['body']));
-        } catch (\Exception $e) {
-            return response(
-                'Sorry, your reply could not be saved at this time.', 422
-            );
-        }
+        $this->validate(request(), ['body' => 'required|spamfree']);
+        $reply->update(request(['body']));
     }
     /**
      * Delete the given reply.

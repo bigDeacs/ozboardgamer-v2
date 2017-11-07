@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Redis;
 use App\Filters\ThreadFilters;
+use App\Trending;
 use App\Thread;
 use App\Channel;
 use Illuminate\Http\Request;
@@ -19,7 +21,7 @@ class ThreadsController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Channel $channel, ThreadFilters $filters)
+    public function index(Channel $channel, ThreadFilters $filters, Trending $trending)
     {
         $threads = $this->getThreads($channel, $filters);
 
@@ -27,7 +29,10 @@ class ThreadsController extends Controller
           return $threads;
         }
 
-        return view('threads.index', compact('threads'));
+        return view('threads.index', [
+          'threads' => $threads,
+          'trending' => $trending->get()
+        ]);
     }
 
     /**
@@ -71,11 +76,15 @@ class ThreadsController extends Controller
      * @param  \App\Thread  $thread
      * @return \Illuminate\Http\Response
      */
-    public function show($channel, Thread $thread)
+    public function show($channel, Thread $thread, Trending $trending)
     {
         if(auth()->check()) {
           auth()->user()->read($thread);
         }
+
+        $trending->push($thread);
+
+        $thread->increment('visits');
 
         return view('threads.show', compact('thread'));
     }
@@ -128,6 +137,6 @@ class ThreadsController extends Controller
           $threads->where('channel_id', $channel->id);
         }
 
-        return $threads->get();
+        return $threads->paginate(5);
     }
 }

@@ -16,15 +16,17 @@
 
         <div class="panel-body">
             <div v-if="editing">
-                <div class="form-group">
-                    <textarea class="form-control" v-model="body"></textarea>
-                </div>
+                <form @submit.prevent="update">
+                    <div class="form-group">
+                        <textarea class="form-control" v-model="body" required></textarea>
+                    </div>
 
-                <button class="btn btn-xs btn-primary" @click="update">Update</button>
-                <button class="btn btn-xs btn-link" @click="editing = false">Cancel</button>
+                    <button class="btn btn-xs btn-primary">Update</button>
+                    <button class="btn btn-xs btn-link" @click="editing = false" type="button">Cancel</button>
+                </form>
             </div>
 
-            <div v-else v-text="body"></div>
+            <div v-else v-html="body"></div>
         </div>
 
         <div class="panel-footer level" v-if="canUpdate">
@@ -37,12 +39,9 @@
 <script>
     import Favorite from './Favorite.vue';
     import moment from 'moment';
-
     export default {
         props: ['data'],
-
         components: { Favorite },
-
         data() {
             return {
                 editing: false,
@@ -50,38 +49,31 @@
                 body: this.data.body
             };
         },
-
         computed: {
             ago() {
-              return moment(this.data.created_at).fromNow();
+                return moment(this.data.created_at).fromNow() + '...';
             },
             signedIn() {
                 return window.App.signedIn;
             },
-
             canUpdate() {
                 return this.authorize(user => this.data.user_id == user.id);
             }
         },
-
         methods: {
             update() {
                 axios.patch(
-                  '/replies/' + this.data.id, {
-                    body: this.body
-                  })
-                  .catch(error => {
-                    flash(error.response.data, 'danger');
-                  });
-
+                    '/replies/' + this.data.id, {
+                        body: this.body
+                    })
+                    .catch(error => {
+                        flash(error.response.data, 'danger');
+                    });
                 this.editing = false;
-
                 flash('Updated!');
             },
-
             destroy() {
                 axios.delete('/replies/' + this.data.id);
-
                 this.$emit('deleted', this.data.id);
             }
         }

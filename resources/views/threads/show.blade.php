@@ -1,5 +1,9 @@
 @extends('layouts.app')
 
+@section('head')
+  <link href="{{ asset('css/vendor/jquery.atwho.css') }}" rel="stylesheet">
+@endsection
+
 @section('content')
   <thread-view :initial-replies-count="{{ $thread->replies_count }}" inline-template>
       <div class="container">
@@ -8,6 +12,7 @@
                   <div class="panel panel-default">
                       <div class="panel-heading">
                           <div class="level">
+                              <img src="{{ $thread->creator->avatar_path }}" alt="{{ $thread->creator->name }}" width="auto" height="50" class="mr-1" />
                               <span class="flex">
                                   <a href="{{ route('profile', $thread->creator) }}">{{ $thread->creator->name }}</a> posted:
                                   {{ $thread->title }}
