@@ -10,10 +10,7 @@
 | contains the "web" middleware group. Now create something great!
 |
 */
-
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', 'HomeController@index')->name('home');
 
 Auth::routes();
 
@@ -44,4 +41,4 @@ Route::delete('/profiles/{user}/notifications/{notification}', 'UserNotification
 Route::get('api/users', 'Api\UsersController@index');
 Route::post('api/users/{user}/avatar', 'Api\UserAvatarController@store')->middleware('auth')->name('avatar');
 
-Route::get('/register/confirm', 'Api\RegisterConfirmationController@index');
+Route::get('/register/confirm', 'Auth\RegisterConfirmationController@index')->name('register.confirm');
