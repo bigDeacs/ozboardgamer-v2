@@ -12,7 +12,9 @@
                   <div class="panel panel-default">
                       <div class="panel-heading">
                           <div class="level">
-                              <img src="{{ $thread->creator->avatar_path }}" alt="{{ $thread->creator->name }}" width="auto" height="50" class="mr-1" />
+                              <div class="img-circle avatar-wrapper mr-1">
+                                <img src="{{ $thread->creator->avatar_path }}" alt="{{ $thread->creator->name }}" class="avatar" />
+                              </div>
                               <span class="flex">
                                   <a href="{{ route('profile', $thread->creator) }}">{{ $thread->creator->name }}</a> posted:
                                   {{ $thread->title }}

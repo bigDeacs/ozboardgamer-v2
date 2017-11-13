@@ -1,7 +1,7 @@
 <template>
     <div>
       <div class="level">
-        <img :src="avatar" width="auto" height="50" class="mr-1" />
+        <img :src="avatar" width="auto" height="100" class="mr-1" />
         <h1 v-text="user.name"></h1>
       </div>
       <form v-if="canUpdate" method="POST" enctype="multipart/form-data">

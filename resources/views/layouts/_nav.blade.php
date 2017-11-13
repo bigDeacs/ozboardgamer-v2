@@ -54,7 +54,12 @@
 
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-                            {{ Auth::user()->name }} <span class="caret"></span>
+                            <div class="level">
+                              <div class="img-circle avatar-wrapper mr-1">
+                                <img src="{{ Auth::user()->avatar_path }}" alt="{{ Auth::user()->name }}" class="avatar" />
+                              </div>
+                              {{ Auth::user()->name }} <span class="caret"></span>
+                            </div>
                         </a>
 
                         <ul class="dropdown-menu" role="menu">

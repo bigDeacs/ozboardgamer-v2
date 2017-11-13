@@ -2,6 +2,9 @@
     <div :id="'reply-'+id" class="panel panel-default">
         <div class="panel-heading">
             <div class="level">
+                <div class="img-circle avatar-wrapper mr-1">
+                  <img :src="data.owner.avatar_path" :alt="data.owner.name" class="avatar"/>
+                </div>
                 <h5 class="flex">
                     <a :href="'/profiles/'+data.owner.name"
                         v-text="data.owner.name">

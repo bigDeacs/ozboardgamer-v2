@@ -28,6 +28,8 @@
         .flex { flex: 1; }
         .mr-1 { margin-right: 1em; }
         [v-cloak] { display: none; }
+        .avatar-wrapper { overflow: hidden;width: 50px;height: 50px; }
+        .avatar { height: 100%;width: auto; }
     </style>
 
     @yield('head')

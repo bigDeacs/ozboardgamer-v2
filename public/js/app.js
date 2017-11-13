@@ -59001,7 +59001,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         var _this = this;
 
         if (this.message) {
-            this.flash(this.message);
+            this.flash();
         }
         window.events.$on('flash', function (data) {
             return _this.flash(data);
@@ -59011,8 +59011,11 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
     methods: {
         flash: function flash(data) {
-            this.body = data.message;
-            this.level = data.level;
+            if (data) {
+                this.body = data.message;
+                this.level = data.level;
+            }
+
             this.show = true;
 
             this.hide();
@@ -59621,7 +59624,7 @@ var render = function() {
     _c("div", { staticClass: "level" }, [
       _c("img", {
         staticClass: "mr-1",
-        attrs: { src: _vm.avatar, width: "auto", height: "50" }
+        attrs: { src: _vm.avatar, width: "auto", height: "100" }
       }),
       _vm._v(" "),
       _c("h1", { domProps: { textContent: _vm._s(_vm.user.name) } })
@@ -59897,6 +59900,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Favorite_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__Favorite_vue__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_moment__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_moment___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_moment__);
+//
+//
+//
 //
 //
 //
@@ -60384,6 +60390,16 @@ var render = function() {
     [
       _c("div", { staticClass: "panel-heading" }, [
         _c("div", { staticClass: "level" }, [
+          _c("div", { staticClass: "img-circle avatar-wrapper mr-1" }, [
+            _c("img", {
+              staticClass: "avatar",
+              attrs: {
+                src: _vm.data.owner.avatar_path,
+                alt: _vm.data.owner.name
+              }
+            })
+          ]),
+          _vm._v(" "),
           _c("h5", { staticClass: "flex" }, [
             _c("a", {
               attrs: { href: "/profiles/" + _vm.data.owner.name },
